@@ -3,9 +3,13 @@ var express = require("express")
 var app = express()
 var db = require("./database.js")
 
+
+const cors = require("cors")
+
 var bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cors());
 
 // Server port
 var HTTP_PORT = 8000
