@@ -5,8 +5,12 @@ import math
 import datetime
 import sys
 
-frame = cv2.imread('lane4.jpg')
+import matplotlib.pyplot as plt
+import matplotlib.image as img
 
+frame = cv2.imread('blue1.jpg')
+# reading the image
+#frame = img.imread('lane1.jpg')
 
 def detect_edges(frame):
     # filter for blue lane lines
@@ -14,19 +18,19 @@ def detect_edges(frame):
 
 
     # Green color
-    low_green = np.array([25, 52, 72])
-    high_green = np.array([102, 255, 255])
-    green_mask = cv2.inRange(hsv, low_green, high_green)
-    green = cv2.bitwise_and(frame, frame, mask=green_mask)
+    # low_green = np.array([25, 52, 72])
+    # high_green = np.array([102, 255, 255])
+    # mask = cv2.inRange(hsv, low_green, high_green)
+    # green = cv2.bitwise_and(frame, frame, mask=mask)
 
 
-    # lower_blue = np.array([60, 40, 40])
-    # upper_blue = np.array([150, 255, 255])
-    # mask = cv2.inRange(hsv, lower_blue, upper_blue)
+    lower_blue = np.array([60, 40, 40])
+    upper_blue = np.array([150, 255, 255])
+    mask = cv2.inRange(hsv, lower_blue, upper_blue)
 
 
     # detect edges
-    edges = cv2.Canny(green_mask, 200, 400)
+    edges = cv2.Canny(mask, 200, 400)
 
     return edges
 
@@ -52,12 +56,13 @@ def region_of_interest(edges):
 def detect_line_segments(cropped_edges):
     # tuning min_threshold, minLineLength, maxLineGap is a trial and error process by hand
     rho = 1  # distance precision in pixel, i.e. 1 pixel
-    angle = np.pi / 150  # angular precision in radian, i.e. 1 degree
-    min_threshold = 20  # minimal of votes
+    angle = np.pi / 180  # angular precision in radian, i.e. 1 degree
+    min_threshold = 10  # minimal of votes
     line_segments = cv2.HoughLinesP(cropped_edges, rho, angle, min_threshold, 
-                                    np.array([]), minLineLength=8, maxLineGap=50)
+                                    np.array([]), minLineLength=80, maxLineGap=25)
 
     return line_segments
+
 
 
 
@@ -138,6 +143,11 @@ cropped_edges = region_of_interest(edges)
 line_segments = detect_line_segments(cropped_edges)
 lane_lines = average_slope_intercept(frame, line_segments)
 lane_lines_image = display_lines(frame, lane_lines)
-cv2.imshow("lane lines", lane_lines_image)
-cv2.waitKey(0)
+
+
+# displaying the image
+#plt.imshow(lane_lines_image)
+
+# cv2.imshow("lane lines", lane_lines_image)
+# cv2.waitKey(0)
 
